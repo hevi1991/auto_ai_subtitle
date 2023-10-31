@@ -1,4 +1,5 @@
 from translate import Translator
+from translate.providers import MicrosoftProvider
 import re
 import threading
 
@@ -26,20 +27,23 @@ def add_newline_if_missing(s):
 
 def translate_task(lines, translator_fun, result_map, i, translator):
     print("thread id: ", i, "lines num: ", len(lines))
-    result_map[i] = [translator_fun(translator, line, n) for n, line in enumerate(lines)]
+    result_map[i] = [translator_fun(translator, line, n)
+                     for n, line in enumerate(lines)]
 
 
 def translate_file(translator_fun, file1, file2, thread_nums, translator=None):
     with open(file1, 'r', encoding='utf-8') as f1, open(file2, 'w', encoding='utf-8') as f2:
         lines = f1.readlines()
         print("translate file total lines: ", len(lines))
-        result = get_translate_result(lines, thread_nums, translator, translator_fun)
+        result = get_translate_result(
+            lines, thread_nums, translator, translator_fun)
         f2.writelines(result)
         print("\ntranslate write file done")
 
 
 def get_translate_result(lines, thread_nums, translator, translator_fun):
-    result_map = get_translate_threads_result(lines, thread_nums, translator, translator_fun)
+    result_map = get_translate_threads_result(
+        lines, thread_nums, translator, translator_fun)
     result = []
     for key in sorted(result_map):
         result.extend(result_map.get(key))
@@ -72,9 +76,10 @@ def get_split_lines(i, lines, n, thread_nums):
 
 
 def do_translate(file1, file2, form, to, thread_nums):
-    translator = Translator(from_lang=form, to_lang=to)
+    translator = Translator(from_lang=form, to_lang=to,
+                            secret_access_key='bf32c5e9435d0b25e4e6', email='he.wei@email.cn')
     translate_file(__translate, file1, file2, thread_nums, translator)
 
 
 if __name__ == '__main__':
-    do_translate('test.srt', 'test1.srt', 'ja', 'zh')
+    do_translate('../test.srt', '../test1.srt', 'en', 'zh', 10)
