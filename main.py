@@ -8,7 +8,7 @@ import yaml
 from script import audio_tool, whisper_tool
 
 
-def generate_subtitle(input, from_lang='en'):
+def generate_subtitle(input, lang='en'):
 
     last_dot_index = input.rfind('.')
     mp3_output = input[:last_dot_index]+'.mp3'
@@ -21,7 +21,7 @@ def generate_subtitle(input, from_lang='en'):
     print('audio extract success')
 
     print('whisper begin')
-    whisper_tool.do_whisper(mp3_output, srt_output, from_lang, config['hf_model_path'],
+    whisper_tool.do_whisper(mp3_output, srt_output, lang, config['hf_model_path'],
                             config['device'])
     print('whisper success')
 
@@ -29,13 +29,6 @@ def generate_subtitle(input, from_lang='en'):
     os.remove(mp3_output)
 
     print('success')
-
-    # 网络问题，无法有效翻译
-    # print('translate begin')
-    # translate_tool.do_translate(config['srt_path'], config['srt_translate_path'], config['from'], config['to'],
-    #                             config['translate_threads'])
-    # print('translate success')
-    # print('success')
 
 
 if __name__ == '__main__':
@@ -84,7 +77,7 @@ if __name__ == '__main__':
         for index, input in enumerate(inputs):
             btn.config(text=f'Extracting {index+1}/{len(inputs)}, please wait')
             btn.update()
-            generate_subtitle(input=input, from_lang=lang)
+            generate_subtitle(input=input, lang=lang)
         file_btn.config(state='normal')
         btn.config(text='EXTRACT', state='normal')
         messagebox.showinfo('Info', 'Extract successfully!')

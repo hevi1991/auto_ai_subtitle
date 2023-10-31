@@ -1,10 +1,5 @@
-#翻译时开启多少线程
-translate_threads: 10
-#翻译源语言
-from: en
-#翻译目标语言
-to: en
 #huggingface model地址，例如 D:\download\pytorch_model.bin
-hf_model_path: ""
+# hf_model_path: ""
+hf_model_path: C:\Users\hevi1\MyProjects\auto_ai_subtitle\pytorch_model.bin
 #devive: cuda, cpu
 device: cpu
