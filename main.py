@@ -1,8 +1,8 @@
-from tkinter import *
-from tkinter.ttk import Combobox
-from tkinter import filedialog
-from tkinter import messagebox
 import os
+from tkinter import *
+from tkinter import filedialog, messagebox
+from tkinter.ttk import Combobox
+
 import yaml
 
 from script import audio_tool, whisper_tool
@@ -10,7 +10,6 @@ from script import audio_tool, whisper_tool
 
 def generate_subtitle(input, from_lang='en'):
 
-    # output = input
     last_dot_index = input.rfind('.')
     mp3_output = input[:last_dot_index]+'.mp3'
     srt_output = input[:last_dot_index]+'.srt'
@@ -49,6 +48,7 @@ if __name__ == '__main__':
     x = (ws/2) - (w/2)
     y = (hs/2) - (h/2)
     window.geometry('%dx%d+%d+%d' % (w, h, x, y))
+    window.resizable(False, False)
     window.title('Extract subtitle')
 
     lang_lbl = Label(window, text='language')
@@ -59,11 +59,11 @@ if __name__ == '__main__':
     combo.grid(column=1, row=0)
 
     def choose_file():
-        file = filedialog.askopenfilename(filetypes=[('Video files', '*.mp4 *.flv *.avi *.mkv'),('All files', '*.*')])
-        print(file)
-        if file is not None:
+        files = filedialog.askopenfilenames(
+            filetypes=[('Video files', '*.mp4 *.flv *.avi *.mkv'), ('All files', '*.*')])
+        if files is not None:
             file_txt.delete(0, END)
-            file_txt.insert(0, file)
+            file_txt.insert(0, ';'.join(files))
 
     file_lbl = Label(window, text='file')
     file_lbl.grid(column=0, row=1)
@@ -74,13 +74,17 @@ if __name__ == '__main__':
 
     def clicked():
         lang = combo.get()
-        input = file_txt.get()
-        if input is None or input == '':
+        inputs = file_txt.get()
+        if inputs is None or inputs == '':
             messagebox.showerror('Error', 'No file path')
             return
+        inputs = inputs.strip(';').split(';')
         file_btn.config(state='disabled')
-        btn.config(text='extracting...please wait', state='disabled')
-        generate_subtitle(input=input, from_lang=lang)
+        btn.config(text='Extracting...please wait', state='disabled')
+        for index, input in enumerate(inputs):
+            btn.config(text=f'Extracting {index+1}/{len(inputs)}, please wait')
+            btn.update()
+            generate_subtitle(input=input, from_lang=lang)
         file_btn.config(state='normal')
         btn.config(text='EXTRACT', state='normal')
         messagebox.showinfo('Info', 'Extract successfully!')
