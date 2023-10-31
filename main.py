@@ -59,7 +59,7 @@ if __name__ == '__main__':
     combo.grid(column=1, row=0)
 
     def choose_file():
-        file = filedialog.askopenfilename()
+        file = filedialog.askopenfilename(filetypes=[('Video files', '*.mp4, *.flv, *.avi, *.mkv'),('All files', '*.*')])
         print(file)
         if file is not None:
             file_txt.delete(0, END)
