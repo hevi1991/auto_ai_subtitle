@@ -10,6 +10,9 @@ from script import audio_tool, whisper_tool
 
 def generate_subtitle(input, lang='en'):
 
+    print('input='+input)
+    print('lang='+lang)
+
     last_dot_index = input.rfind('.')
     mp3_output = input[:last_dot_index]+'.mp3'
     srt_output = input[:last_dot_index]+'.srt'
