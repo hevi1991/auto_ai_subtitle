@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     lang_frame = Frame(window)
     lang_frame.pack(fill='both', pady=10)
-    lang_lbl = Label(lang_frame, text='language', width=10)
+    lang_lbl = Label(lang_frame, text='LANGUAGE', width=10)
     lang_lbl.pack(side=LEFT)
     combo = Combobox(lang_frame, state='readonly')
     combo['values'] = ('en', 'ja', 'zh')
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     file_frame = Frame(window)
     file_frame.pack(fill='both')
-    file_lbl = Label(file_frame, text='file', width=10)
+    file_lbl = Label(file_frame, text='FILE PATH', width=10)
     file_lbl.pack(side=LEFT)
     file_txt = Entry(file_frame)
     file_txt.pack(side=LEFT)
