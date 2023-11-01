@@ -66,7 +66,7 @@ def do_whisper(audio, srt_path, language, hf_model_path, device):
     else:
         model = load_model_bin(hf_model_path, device)
     print("whisper working...")
-    result = model.transcribe(audio, language=language)
+    result = model.transcribe(audio, language=language, fp16=False)
     print("whisper execute success")
     print("writing srt file...")
     write_srt(result['segments'], srt_path)
