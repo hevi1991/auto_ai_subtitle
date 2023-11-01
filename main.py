@@ -77,13 +77,18 @@ if __name__ == '__main__':
         inputs = inputs.strip(';').split(';')
         file_btn.config(state='disabled')
         btn.config(text='Extracting...please wait', state='disabled')
-        for index, input in enumerate(inputs):
-            btn.config(text=f'Extracting {index+1}/{len(inputs)}, please wait')
-            btn.update()
-            generate_subtitle(input=input, lang=lang)
-        file_btn.config(state='normal')
-        btn.config(text='EXTRACT', state='normal')
-        messagebox.showinfo('Info', 'Extract successfully!')
+        try:
+            for index, input in enumerate(inputs):
+                btn.config(
+                    text=f'Extracting {index+1}/{len(inputs)}, please wait')
+                btn.update()
+                generate_subtitle(input=input, lang=lang)
+            messagebox.showinfo('Info', 'Extract successfully!')
+        except RuntimeError as err:
+            messagebox.showerror('Generate Error', err)
+        finally:
+            file_btn.config(state='normal')
+            btn.config(text='EXTRACT', state='normal')
     btn = Button(window, text='EXTRACT', command=clicked)
     btn.grid(column=1, row=2)
 
