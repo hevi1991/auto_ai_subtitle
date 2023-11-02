@@ -1,4 +1,5 @@
 import re
+
 import torch
 import whisper
 
@@ -47,7 +48,8 @@ def hf_to_whisper_states(text):
 
 def load_model_bin(model_path, device):
     # Load HF Model
-    hf_state_dict = torch.load(model_path, map_location=torch.device(device))  # pytorch_model.bin file
+    hf_state_dict = torch.load(model_path, map_location=torch.device(
+        device))  # pytorch_model.bin file
 
     # Rename layers
     for key in list(hf_state_dict.keys())[:]:
@@ -60,11 +62,22 @@ def load_model_bin(model_path, device):
     return whisper_model
 
 
-def do_whisper(audio, srt_path, language, hf_model_path, device):
-    if hf_model_path == "":
-        model = whisper.load_model("base")
+def do_whisper(audio, srt_path, language, model_size, model_download_root):
+    """
+    Load model and transcribe
+
+    Parameters
+    ----------
+    model_size: one of ['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large']
+    """
+    if model_size == "":
+        # whisper将从网络下载模型
+        model = whisper.load_model(
+            "base", download_root=model_download_root or None)
     else:
-        model = load_model_bin(hf_model_path, device)
+        model = whisper.load_model(
+            model_size, download_root=model_download_root or None)
+
     print("whisper working...")
     result = model.transcribe(audio, language=language, fp16=False)
     print("whisper execute success")

@@ -12,7 +12,7 @@ with open('config.yaml', encoding='utf-8') as f:
     config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
 
-def generate_subtitle(input, lang='en', use_custom_model=True):
+def generate_subtitle(input, lang='en', model_size='base'):
 
     print('input='+input)
     print('lang='+lang)
@@ -26,8 +26,9 @@ def generate_subtitle(input, lang='en', use_custom_model=True):
     print('audio extract success')
 
     print('whisper begin')
-    whisper_tool.do_whisper(mp3_output, srt_output, lang, config['hf_model_path'] if use_custom_model else "",
-                            config['device'])
+    whisper_tool.do_whisper(audio=mp3_output, srt_path=srt_output, language=lang,
+                            model_size=model_size,
+                            model_download_root=config['model_download_root'])
     print('whisper success')
 
     print('remove temporary file')
@@ -42,21 +43,31 @@ if __name__ == '__main__':
     ws = window.winfo_screenwidth()
     hs = window.winfo_screenheight()
     w = 300
-    h = 150
+    h = 180
     x = (ws/2) - (w/2)
     y = (hs/2) - (h/2)
     window.geometry('%dx%d+%d+%d' % (w, h, x, y))
     window.resizable(False, False)
     window.title('Extract subtitle')
 
+    model_frame = Frame(window)
+    model_frame.pack(fill='both', pady=10)
+    model_lbl = Label(model_frame, text='MODEL', width=10)
+    model_lbl.pack(side=LEFT)
+    model_combo = Combobox(model_frame, state='readonly')
+    model_combo['values'] = ('tiny.en', 'tiny', 'base.en', 'base', 'small.en',
+                             'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large')
+    model_combo.current(3)
+    model_combo.pack(side=LEFT, ipadx=26)
+
     lang_frame = Frame(window)
     lang_frame.pack(fill='both', pady=10)
     lang_lbl = Label(lang_frame, text='LANGUAGE', width=10)
     lang_lbl.pack(side=LEFT)
-    combo = Combobox(lang_frame, state='readonly')
-    combo['values'] = ('en', 'ja', 'zh')
-    combo.current(0)
-    combo.pack(side=LEFT, ipadx=26)
+    lang_combo = Combobox(lang_frame, state='readonly')
+    lang_combo['values'] = ('en', 'ja', 'zh')
+    lang_combo.current(0)
+    lang_combo.pack(side=LEFT, ipadx=26)
 
     def choose_file():
         files = filedialog.askopenfilenames(
@@ -66,7 +77,7 @@ if __name__ == '__main__':
             file_txt.insert(0, ';'.join(files))
 
     file_frame = Frame(window)
-    file_frame.pack(fill='both')
+    file_frame.pack(fill='both', pady=10)
     file_lbl = Label(file_frame, text='FILE PATH', width=10)
     file_lbl.pack(side=LEFT)
     file_txt = Entry(file_frame)
@@ -74,15 +85,10 @@ if __name__ == '__main__':
     file_btn = Button(file_frame, text='CHOOSE', command=choose_file)
     file_btn.pack(side=LEFT, padx=8)
 
-    use_custom_model_var = BooleanVar()
-    model_check = Checkbutton(window, text='USE CUSTOM MODEL', variable=use_custom_model_var,
-                              state='disabled' if config['hf_model_path'] == '' else 'normal')
-    model_check.pack(ipady=6)
-
     def clicked():
-        lang = combo.get()
+        lang = lang_combo.get()
         inputs = file_txt.get()
-        use_custom_model = use_custom_model_var.get()
+        model_size = model_combo.get()
         if inputs is None or inputs == '':
             messagebox.showerror('Error', 'No file path')
             return
@@ -95,7 +101,7 @@ if __name__ == '__main__':
                     text=f'Extracting {index+1}/{len(inputs)}, please wait')
                 btn.update()
                 generate_subtitle(input=input, lang=lang,
-                                  use_custom_model=use_custom_model)
+                                  model_size=model_size)
             messagebox.showinfo('Info', 'Extract successfully!')
         except RuntimeError as err:
             messagebox.showerror('Generate Error', err)
