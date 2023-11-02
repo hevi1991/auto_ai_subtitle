@@ -12,6 +12,6 @@ ai字幕生成，字幕翻译 基于openai/whisper、~~translate~~、ffmpeg，�
 
 安装依赖 `pip install -r requirements.txt`
 
-将配置信息填入 `config.yaml`
+拷贝一份`config.example.yaml`命名为`config.yaml`，将配置信息填入
 
 执行 `python main.py`
