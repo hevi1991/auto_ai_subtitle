@@ -1,5 +1,5 @@
 #huggingface model地址，例如 D:\download\pytorch_model.bin
 # hf_model_path: ""
-hf_model_path: C:\Users\hevi1\MyProjects\auto_ai_subtitle\pytorch_model.bin
+hf_model_path: C:\Users\hevi1\MyProjects\auto_ai_subtitle\model\small.bin
 #devive: cuda, cpu
 device: cpu

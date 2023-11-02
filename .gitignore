@@ -1,5 +1,4 @@
 __pycache__
-pytorch_model.bin
+model/*
 build
 dist
-main.spec
