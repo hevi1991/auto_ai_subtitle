@@ -79,7 +79,8 @@ def do_whisper(audio, srt_path, language, model_size, model_download_root):
             model_size, download_root=model_download_root or None)
 
     print("whisper working...")
-    result = model.transcribe(audio, language=language, fp16=False)
+    result = model.transcribe(audio, language=language, fp16=False,
+                              initial_prompt='以下是普通话的句子' if language == 'zh' else None)
     print("whisper execute success")
     print("writing srt file...")
     write_srt(result['segments'], srt_path)
