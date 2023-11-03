@@ -1,7 +1,7 @@
 import os
 import queue
 import sys
-from concurrent.futures import ThreadPoolExecutor
+import threading
 from tkinter import *
 from tkinter import filedialog, messagebox
 from tkinter.ttk import Combobox
@@ -26,7 +26,7 @@ class App():
 
     def __init__(self) -> None:
 
-        self._thread_pool = ThreadPoolExecutor(os.cpu_count())
+        self._running_thread: None | threading.Thread = None
 
         self.window = Tk()
         ws = self.window.winfo_screenwidth()
@@ -76,8 +76,9 @@ class App():
 
         def extract():
             self._update_status_text()
-            self._running_thread_future = self._thread_pool.submit(
-                self._extract)
+            self._running_thread = threading.Thread(
+                target=self._extract, daemon=True)
+            self._running_thread.start()
 
         self.btn = Button(self.window, text='EXTRACT', command=extract)
         self.btn.pack()
@@ -96,13 +97,6 @@ class App():
 
     def on_closing(self):
         print('Closing app...')
-        # 判断是否有正在执行的线程，直接调用cancel
-        if hasattr(self, '_running_thread_future') and not self._running_thread_future.done():
-            cancel_result = self._running_thread_future.cancel()
-            print('Running cancel task result: ', cancel_result)
-            if not cancel_result:
-                print('Exit 1')
-                sys.exit(1)
         sys.exit(0)
 
     def run(self) -> None:
