@@ -1,0 +1,7 @@
+__pycache__
+models_root
+build
+dist
+
+# config
+config.yaml
