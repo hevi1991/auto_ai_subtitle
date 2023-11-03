@@ -85,7 +85,7 @@ class App():
 
         self.status_txt = Text(self.window, height=180)
         self.status_txt.pack(pady=10, padx=10)
-        self.status_txt.insert(INSERT, 'Click EXTRACT button to start')
+        self.status_txt.insert(INSERT, 'Choose your media files and click EXTRACT button to start.\n')
 
         self.msg_queue = Text_Queue()
         sys.stdout = self.msg_queue
