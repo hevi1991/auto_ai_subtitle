@@ -2,7 +2,6 @@ import os
 import queue
 import sys
 from concurrent.futures import ThreadPoolExecutor
-from threading import get_ident
 from tkinter import *
 from tkinter import filedialog, messagebox
 from tkinter.ttk import Combobox
@@ -61,7 +60,7 @@ class App():
 
         def choose_file():
             files = filedialog.askopenfilenames(
-                filetypes=[('Video files', '*.mp4 *.flv *.avi *.mkv'), ('All files', '*.*')])
+                filetypes=[('Media files', '*.mp4 *.flv *.avi *.mkv *.mp3'), ('All files', '*.*')])
             if files is not None:
                 self.file_txt.delete(0, END)
                 self.file_txt.insert(0, ';'.join(files))
@@ -102,14 +101,22 @@ class App():
             cancel_result = self._running_thread_future.cancel()
             print('Running cancel task result: ', cancel_result)
             if not cancel_result:
+                print('Exit 1')
                 sys.exit(1)
         sys.exit(0)
 
     def run(self) -> None:
+        """
+        启动GUI循环
+        """
+
         self.window.mainloop()
-        self._update_status_text()
 
     def _update_status_text(self):
+        """
+        更新状态文本
+        """
+
         while not self.msg_queue.empty():
             content = self.msg_queue.get()
             self.status_txt.insert(END, content)
@@ -148,6 +155,9 @@ class App():
             self.btn.config(text='EXTRACT', state='normal')
 
     def _generate_subtitle(self, input, lang='en', model_size='base'):
+        """
+        生成字幕
+        """
 
         with open('config.yaml', encoding='utf-8') as f:
             config = yaml.load(f.read(), Loader=yaml.FullLoader)
@@ -156,12 +166,14 @@ class App():
         print('lang='+lang)
 
         last_dot_index = input.rfind('.')
-        mp3_output = input[:last_dot_index]+'.mp3'
+        input_is_mp3 = input[last_dot_index:].lower() != '.mp3'
+        mp3_output = input[:last_dot_index] + '.mp3' if input_is_mp3 else input
         srt_output = input[:last_dot_index]+'.srt'
 
-        print('audio extract begin')
-        audio_tool.audio_extract(input, mp3_output)
-        print('audio extract success')
+        if input_is_mp3:
+            print('audio extract begin')
+            audio_tool.audio_extract(input, mp3_output)
+            print('audio extract success')
 
         print('whisper begin')
         whisper_tool.do_whisper(audio=mp3_output, srt_path=srt_output, language=lang,
@@ -170,7 +182,8 @@ class App():
         print('whisper success')
 
         print('remove temporary file')
-        os.remove(mp3_output)
+        if not input_is_mp3:
+            os.remove(mp3_output)
 
         print('success')
 
