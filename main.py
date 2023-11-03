@@ -160,11 +160,11 @@ class App():
         print('lang='+lang)
 
         last_dot_index = input.rfind('.')
-        input_is_mp3 = input[last_dot_index:].lower() != '.mp3'
-        mp3_output = input[:last_dot_index] + '.mp3' if input_is_mp3 else input
+        input_is_not_mp3 = input[last_dot_index:].lower() != '.mp3'
+        mp3_output = input[:last_dot_index] + '.mp3' if input_is_not_mp3 else input
         srt_output = input[:last_dot_index]+'.srt'
 
-        if input_is_mp3:
+        if input_is_not_mp3:
             print('audio extract begin')
             audio_tool.audio_extract(input, mp3_output)
             print('audio extract success')
@@ -176,7 +176,7 @@ class App():
         print('whisper success')
 
         print('remove temporary file')
-        if not input_is_mp3:
+        if input_is_not_mp3:
             os.remove(mp3_output)
 
         print('success')
