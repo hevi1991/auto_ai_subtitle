@@ -8,10 +8,11 @@ import subprocess
 def audio_extract(input_path, output_path):
 	command = [
 		'ffmpeg', 
-		'-i', 'pipe:0',  # 从stdin读取输入
+		'-i', input_path,  # 读取输入
+		'-f', 'mp3',
 		'-vn',          # 仅提取音频
 		output_path     # 输出文件路径
 	]
 
 	with open(input_path, 'rb') as f:
-		subprocess.run(command, input=f.read())
+		subprocess.run(command)
